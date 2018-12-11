@@ -1,0 +1,570 @@
+赵蒙蒙
+    g-zhaomm@tedu.cn
+
+
+3.提供数据库服务的软件
+    １．软件分类
+        MySQL,Oracle,SQL-Server,DB2,MongoDB,MariaDB
+    2. 生产环境中如何选择使用哪一种数据库软件
+        １．是否开源
+            １．开源软件：MySQL,MongoDB,MariaDB
+             2.商业软件：　Oracle,DB2,SQL-Server
+        2. 是否跨平台
+            １．不跨平台：SQL-Server
+            2. 跨平台： ...
+        3. 公司类型
+            1.商业软件：政府机构，金融机构
+            ２．开源软件：游戏公司，电商公司，论坛和贴吧网站
+
+４．MySQL 数据库特点： 核心是：　关系（二维表）
+    １．关系型数据库：
+        １．关系型数据库的特点
+            １．数据以行和列（表格）形式存储
+            ２．表中每一行叫一条记录，每一列叫一个字段
+            ３．表与表之间的逻辑关联叫关系
+        ２．实例
+            １．关系型数据库存储数据：
+                表1 学生信息表
+                    姓名    年龄    班级
+                    星矢    25    　三班
+                    水冰月  25      六班
+                表２ 班级信息表
+                    班级    班主任
+                    三班    大空翼
+                    六班    松人
+            ２．非关系型数据库存储数据
+                ｛"姓名":"星矢","年龄":"25","班级":"三班","班主任":"大空翼"｝
+                ｛"姓名":"水冰月","年龄":"25","班级":"六班","班主任":"松人"｝
+    ２．跨平台
+        可以再Windows,Linux,Unix上运行
+    ３．支持多种编程语言
+        Python,Java,PHP...
+5.数据库软件，数据库，数据仓库的概念
+    １．数据库(database 简写DB,db)
+        储存在计算机内有组织，可共享的数据集合
+    ２．数据库软件（数据库管理系统）
+        一个软件，看得见，可操作的工具，可以通过
+        SQL语句来操作数据库（SQL:结构化查询语句）
+    ３．数据仓库（data WareHouse 简写　DW,DWH）
+        数据量要比数据库大得多，主要用于数据分析和数据挖掘
+        et:
+            数据库：购物车表，用户信息表
+            数据仓库：分析那个时间段用户的访问量最大，哪个
+            用户一年中购物最多...
+    
+２．MySQL安装
+    1.Ubuntu安装MySQL服务(命令行安装)
+        １．安装服务端
+            sudo apt-get install mysql-server
+        ２．安装客户端
+            sudo apt-get install mysql-client
+        ３．Ubuntu安装软件
+            １．sudo apt-get updata
+                访问源列表中的每个网址，读取软件列表，保存到本地/var/lib/apt/lists
+            ２．sudo apt-get upgrade
+                把本地已安装软件与刚下载的软件列表进行比对，如果发现已安装软件的版本低，
+                则更新软件
+            ３．sudo apt-get -f install
+                表示修复依赖关系
+    ２．Windows安装MySQL
+        １．下载安装包
+            mysql-install***5.7.24.msi
+        ２．按照安装教程安装
+    ３．Mac 安装MySQL
+        1.下载安装包(dmg -> pkg)
+        ２．设置环境变量
+            1.vi .base_profile
+            2.在末尾写如下内容，保存并退出
+                export PATH=${PATH}:/usr/local/mysql/bin
+                或
+                PATH="$PATH":/usr/local/mysql/bin
+            3.在命令行下　$ source .base_profile
+            4.登录测试
+                mysql -uroot -p
+3.启动和连接数据库
+    １．启动服务端（终端下）
+        １．查看MySQL状态
+            sudo /etc/init.d/mysql status
+        2.启动　MySQL 服务
+            sudo /etc/init.d/mysql start | stop | restart
+    2.客户端连接
+        １．命令格式：
+            mysql -h主机地址　-u用户名　-p密码
+            et:
+                mysql -hlocalhost -uroot -p123456
+        2.本地连接可以省略-h选项
+            mysql -uroot -p123456
+4.基本SQL命令
+    1. SQL命令的使用规则
+        １． SQL命令不区分大小写，但是区分中英文标点符号，
+            一律使用英文标点符号"" : 空格
+        ２．每条命令以;结尾
+        ３．使用\c终止当前命令的执行
+    ２．库的管理
+        １．库的基本操作
+            １．查看已有库
+                show databases;
+
+            2.创建库
+                create database 库名;
+                创建的同时指定字符集
+                create database 库名　character set utf8;
+
+            ３．查看创建库的语句（字符集）
+                show create database 库名;
+
+            4.查看当前所在库
+                select database();
+
+            5.切换／选择库
+                use 库名;
+
+            6.查看当前库中所有的表
+                show tables;
+
+            7.删除库
+                drop database 库名;
+
+        2.库名的命名规则
+            １．库名由数字，字母，下划线组成，不能使用纯数字
+            ２．库名区分大小写
+                et:
+                  1.  SQL命令不区分大小写
+                        CREATE DATABASE TESTDB;
+                        等价于
+                        create database TESTDB;
+                  2. 　库名区分大小写
+                        create database TESTDB;
+                        create database Testdb;
+                        分别创建了俩个库：
+                            TESTDB
+                            Testdb
+                  3.   不能使用特殊字符和MySQL的关键字
+            练习：
+                １．创建库 studb,指定字符集为utf8
+                2.进入 studb 库中
+                ３．查看当前所在库
+                ４．创建库 studb2,指定字符集为　latin1
+                5. 进入到 studb2 中
+                ６．查看当前库的字符集
+                ７．删除创建好的俩个库
+        3.　表记录管理
+            １．表的管理　
+
+
+                １．表的基本操作
+                    １．创建表
+                        create table 表名(字段名　数据类型，字段2　数据类型,...);
+
+                        创建的同时制定字符集
+                        create table 表名(字段1　数据类型,字段2　数据类型,...)
+                        character set utf8;
+
+                    2.查看已有表的字符集
+                        show create table 表名;
+
+                    3.查看表结构
+                        desc 表名;
+
+                    4.删除表
+                        drop table 表名;
+                        
+                练习：
+                    １．创建库　studb
+                    2.　在库中创建stuifo表，指定字符集为utf8,指定字段id name age;
+                    3. 查看创建表stuinfo的语句
+                    ４．查看表结构
+                    ５．在库中创建score表，字段有id name score;
+                    6.查看库中所有表;
+                    7.查看score表结构
+                    ８．删除表，删除库
+                注意：
+                    １．如果涉及多个库切换操作表，一定不要忘了切换数据库
+                    ２．所有的数据在数据库中都是以文件的形式存储的，存放目录
+                        为：/var/lib/mysql
+            2.表记录管理(操作数据)
+                1.插入数据(insert)
+                    1.insert into 表名　values(值1),(值2),..;
+                        注意：()中的值代表的是一行，一条记录
+
+                        insert into stuinfo values(1,'张三丰',300),
+                        (2,'张无忌',20);
+
+                    2.insert into 表名(字段1,字段2,...) values(值1),(值2),..;
+                        er:
+                        insert into stuinfo(name,age) values('小昭',20),('敏敏',20);
+
+                2.查询数据(select)
+                    1.select * from 表名;
+                        //查询表中所有数据
+
+                    2.select * from 表名　where 条件;
+                        //查询表中满足条件的数据
+
+                    3.select 字段1,字段2 from 表名 [where 条件];
+                        注意：[]表示可选添加
+
+            3.更改默认字符集
+                １．方法：修改 mysql的配置文件
+                ２．步骤：
+                    １．获取root权限
+                        sudo - i
+                    2.cd /etc/mysql/mysql.conf.d/
+                    3.备份(相当重要)
+                        cp mysqld.cnf mysqld.cnf.bak
+                    4.修改
+                        使用sublime修改：
+                            subl mysqld.cnf   
+                            找到[mysqld]
+                            添加 character_set_server = utf8   
+                        使用vi修改文件
+                            vi mysqld.cnf
+                            找到[mysqld]
+                            添加 character_set_server = utf8
+                    5.重启 mysql 服务
+                      sudo /etc/init.d/mysql restart
+                    6.连接客户端
+                        mysql -uroot -p123456
+                    7.MAC　电脑
+                        文件路径
+                            /etc/my.cnf
+5.数据类型
+    １．数值类型
+        １．整型
+            １．int 大整型(4个字节)
+                取值范围：0-2(32)-1
+
+            2.tinyint 微小整型(1个字节)
+                １．有符号整型（默认）
+                    取值范围：-128 ~ 127
+                    id tinyint signed
+
+                2.无符号整型(unsigned)
+                    取值范围 0 ~ 255
+                    age tinyint　unsigned
+
+            3.smallint 小整型(2字节)
+
+            4.bigint    极大整型(8字节)
+
+        ２．浮点型
+            １．float(4字节，最多显示７个有效位)
+                １．用法
+                    字段名　float(m,n)
+                    m表示总位数，n表示小数位数
+                        et:
+                            score float(3,1)
+
+            注意：１．浮点型，插入整数时，小数位会自动补０；
+                　２．小数位如果多于指定位，会自动对指定位的下一位四舍五入
+
+            2.double(8字节)
+                float　单精度　误差更大
+                double　双精度　误差稍小，在mysql内部运算时，都采用double运算
+
+            3.decimal(最多可显示28个有效位)
+                用法：
+                    decimal(m,n)
+                    m表示总位数，n表示小数位数
+
+        3.数值类型占用的内存空间
+            整数和小数分开存储的，需要各自计算所需的字节数
+            规则：
+                将9的倍数包装成4个字节
+            余数占用字节对照表
+                余数            字节
+                0               0
+                1-2             1
+                3-4             2
+                5-6             3
+                7-8             4
+            et:
+                decimal(19,9)
+                计算存储空间：
+                    整数位数　除以９，商都占用４个字节
+                    余数，根据对照表判断占用几个字节
+                    １０／９商１余数１
+                    占用字节数４＋１＝５字节
+        练习：
+            １．创建库studb2
+                create database studb;
+
+            2.在库中创建表stuinfo,要求：
+                id      大整型
+                name    字符型，宽度１５
+                age     微小整型，不能为负数
+                height  浮点型，小数位2位(float(5,2))
+                money   浮点型，小数位２位(decimal(5,2))
+        et:
+            use studb2;
+            create table stuinfo(id int,name char(15),age tinyint unsigned,
+            height float(5,2),money decimal(5,2));
+
+            3.查询表结构
+            desc stuinfo;
+
+            ４．查看标的字符集
+            show create table stuinfo;
+
+            ５．插入１条完整记录，在表中id,name俩个字段中插入俩条记录
+
+            insert into stuinfo values(1,'Ject',10,121.34,999.88);
+            insert into stuinfo(id,name) values(2,'Rose'),(3,'libai');
+
+            ６．查询所有记录
+            select * from stuinfo;
+
+            ７．查询所有学生的id和姓名
+                select id,name from stuinfo;
+
+    ２．字符类型
+        1.char(m)
+            m指定最大显示宽度，同时也指定最大字符个数取值范围1~255
+            特点：
+                定长存储
+                    char (10)
+                    固定分配１０字符空间存储数据
+        2.varchar(m)
+            m指定最大显示宽度，也指定最大字符个数
+            取值范围：１～６５５３５
+            特点：
+                变长存储
+                    varchar(10)
+                    根据数据的实际长度分配空间，小于10个字符，按照实际的字符数分配
+                    空间，最大可分配１０个字符的空间，超过１０个字符的数据，无法存储，会报错
+        ３．text / longtext(4G) / blob / longblob(4G)
+            text 相关的类型可以用来存储大批量的文本数据(博文等)
+            blob 相关的类型更适用于二进制数据的存储(图片)
+            注意：
+                １．定长和变长字符类型在存储空间上区别较大，
+
+                    char 定长存储：浪费存储空间，但性能高
+                    varchar 变长存储：节省存储空间，但性能低
+
+                ２．字符类型的显示宽度与数值类型宽度的区别
+                    注意：
+                        １．区别：
+                            定长存储，会直接分配固定的存储空间；
+                            变长存储，会根据实际的字符数，分配存储空间
+                　et:int(11)
+                    char(10)
+                    1.数值类型的宽度为显示宽度,用于select查询时显示结果，和占用存储空间无关，
+                        即使超出显示宽度，只要没有超出当前类型的取值范围，都可以插入成功
+
+                    2.字符类型的显示宽度，限制最大字符个数，超出就无法存储
+
+                    3.数值类型如果指定显示宽度，而数据长度小于宽度会自动补０，填充显示宽度
+                        结合 zerofill　属性查看效果
+                        id int(5) zerofill;
+
+
+
+    ３．枚举和集合
+        1.枚举　enum,是一个字符串对象，可以将一些不重复的字符串
+            存储成一个预定义的集合；字段值必须从集合中选取，才是合法值.
+            最多可以列举65535个值，枚举经常用来实现单选：
+                et:
+                    create table userinfo(id int,name char(10),
+                        sex enum('男','女','保密'));
+                特点：
+                    枚举中的数据，会从左到右会自动分配索引，从1开始，查询数据时，可以根据字符串值
+                    进行查询，也可以根据索引值查询
+                        et:
+                        select * from userinfo where sex='男';
+                        等价于
+                        select * from userinfo where sex=1;      
+        ２．集合
+            集合是一种特殊的枚举类型，可以指定一个选项列表，但是字段值可以取范围内的多个值，
+            可以实现多选，类型名使用set表示
+            et:
+                create table couseTab (sportcourse set('羽毛球','篮球','足球',...));
+            
+    ４．日期和时候类型
+        1.date : 'YYYY-MM-DD'
+        2.time : 'HH:mm:ss'
+        3.datetime : 'YYYY-MM-DD hh:mm:ss'
+        4.timestamp: 'YYYY-MM-DD hh:mm:ss'
+        注意：
+            １．datetime : 给NULL，默认返回NULL
+            ２．timestamp : 给NULL，默认返回系统当前时间
+            ３．日期格式：
+                '2018/11/02 10:11:12'
+                '20081011121314'
+    5.日期时间函数：
+        １．now() 返回当前系统时间
+
+        ２．curdate() 返回当前日期(年月日)
+
+        ３．curtime() 返回当前时间(时分秒)
+
+        ４．year(date) 返回指定日期的年份　 date:字段名
+
+        ５．date(date) 返回指定日期的年月日
+
+        ６．time(date) 返回指定日期的时分秒
+
+    ６．日期时间运算
+        １．语法格式
+            select * from 表名 where 字段名　运算符　(时间-interval 时间单位)
+            时间单位：
+                et:
+                    1 day | 2 hour | 1 minute | 1 year | 1 month | 50 second
+            练习：
+               １． 查询一天内的充值记录
+                    select * from t1 where cztime > (now()-interval 1 day);
+               2. 查询一年以前的充值记录
+                    select * from t1 where cztime < (now()-interval 1 year);
+               3.查询一天以前，３天以内的充值记录
+                select * from t1 where cztime < (now()-interval 1 day)
+                                    and cztime >(now()-interval 3 day);
+            3.表示未来的时间节点
+                et:
+                    从当前系统时间向后推算一年，明年
+                    　now()-interval -1 year
+
+2.表结构操作(操作字段)
+　　１．语法：alter table 表名　执行动作;
+    2.添加字段(add)
+        //直接在末尾添加新的字段
+        alter table 表名　add 字段名　数据类型；
+
+        //在第一列的位置添加新字段
+        alter table 表名　add　字段名　数据类型　first;
+
+        //在指定字段的后面添加新字段
+        alter table 表名　add 字段名　数据类型　after 已有字段名;
+    3.删除字段(drop)
+        alter table 表名　drop 字段名;
+    ４．修改数据类型(modify)
+        alter table 表名　modify 字段名　新数据类型;
+    5.表的重命名(rename)
+        alter table 表名　rename 新表名;
+    练习：
+        １．创建库　studb
+            create database studb;
+        ２．在库中创建表t1,字段：
+            name char(10),
+            age tinyint unsigned;
+            phnumber char(11)
+        ３．查看表结构
+            desc t1;
+        ４．在表中第一列的位置插入一个id字段
+            alter table t1 add id int first;
+        ５．修改　phnumber 的数据类型为　int 
+            alter table t1 modify phnumber int;
+        6. 在最后一列的位置插入　address 字段
+            alter table t1 add address int;
+        ７．删除　age 字段
+            alter table t1 drop age;
+        ８．查看表结构
+            desc t1;
+        9.表名修改为tab1;
+            desc tab1;
+3.表记录管理
+    １．插入数据　insert into 表名　values(),(),...;
+
+    2.查询数据　select * from 表名　where 条件;
+
+    3.删除数据
+        １．delete from 表名　where 条件;
+        ２．如果省略　where 条件，
+            delete from 表名;表示清空所有记录
+    4.更新数据
+        １．update 表名　set 字段1=值，字段2=值,...where 条件;
+        ２．update 必须写 where 条件
+  
+    5.总结
+            表字段              表记录
+        增  add                 insert into 表名
+        删  drop                delete from 表名
+        改  modify              updata 表名　set ...
+        查  desc                select * from 表名...
+
+４．运算符
+    １．数值比较/字符比较
+        １．数值比较：= != > >= < <=
+        ２．字符比较：= !=
+    2.逻辑运算符
+        １．条件1 and 条件2;(查询同时满足俩个条件的数据)
+        ２．条件1 or 条件2; (查询满足条件1或者满足条件2的数据)
+    ３．范围内比较：
+        １．between 值1 and 值
+            设置范围在　值１和值２直间
+
+        ２．where 字段名　in(值１，值２，值３，．．．);
+            匹配字段值在 in 给出的范围内的数据
+            et:
+                where age in (22,23,24,25);
+        ３．where 字段名　not in (值１，值２，．．．);
+            匹配字段值不在指定范围内的数据
+    ４．匹配空，非空
+        1.匹配空：where 字段　is null;
+        2.非空：where 字段　is not null;
+            注意：
+               １． is null 和　is not null
+                    主要用来匹配字段值等于null的数据
+
+               ２．空字符串可以直接使用　= 来匹配
+                 et:
+                    where name='';
+                    where name is null;
+    5.模糊查询
+        １．格式：where 字段名 like 表达式
+        ２．表达式：
+            １．_:表示匹配１个字符
+            ２．%:表示匹配０到多个字符
+            ３．示例：
+                １．查找姓名包含２个字符及以上的数据
+                ２．匹配所有数据
+                    select name from sanguo where name like '%';
+                    注意：
+                        null值不会被匹配出来
+                        空字符串表示０个字符，会被正常匹配
+                ３．匹配姓名为３个字符的数据
+                    where name like '___';
+                4.匹配姓赵的数据
+                    where name like '赵%_';
+                    更改查询结果中的显示字段
+                    select name as n from sanguo where name like '赵%_';
+5.SQL 查询
+    １．完整的查询语句由以下关键字组成　顺序为书写顺序，序号是mysql执行顺序
+        3.select
+        1.where
+        2.group by
+        4.having
+        5.order by
+        6.limit
+    2. order by :对查询结果进行排序
+        1.格式：．．．order by 字段名　ASC(升序)/DESC(降序)
+        ２．示例：
+            １．将英雄按照防御值从高到低排序
+                select * from sanguo order by fangyu DESC;
+            2.将蜀国英雄按照攻击值从高到低排序
+                select * from sanguo where country='蜀国' order by fangyu DESC;
+            3.将魏国和蜀国英雄中名字为３个字，按照防御值升序排列
+                select * from sanguo where country in('蜀国','魏国')
+                 and name like '___' order by fangyu ASC;
+    ３．limit 分页查询
+        永远放在SQL语句的最后书写
+        分页用来控制显示多少条结果中的数据
+            limit (n-1)*m,m
+            １．语法：
+                １．limit n;　表示显示n条数据
+                ２．limit m,n;　表示从第m+1条记录开始显示，显示n条
+                    et:
+                        limit 2,3; 显示第3,4,5三条数据
+                ３．示例：
+                    １．查找蜀国英雄中，防御值倒数第２名至倒数第４名的英雄记录
+                        select * from sanguo where country='蜀国' order by fangyu ASC 
+                        limit 1,3;　
+                    2.查找蜀国英雄中攻击值前３名且名字不为null的英雄信息
+                        select * from sanguo where country='蜀国'
+                        and name is not null order by gongji DESC limit 3;
+                    3.显示查询结果中第20-25条数据
+                        limit 19,6;
+                4.select 查询
+                    select *
+                    select 字段
+                    select 聚合函数　where...
+                    1.聚合函数
+                        最大值　最小值　求和　平均值　计数

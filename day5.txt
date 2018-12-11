@@ -1,0 +1,102 @@
+1.E-R模型(Entry-Relationship)
+    1.定义：实体关系数据模型，用于数据库的设计
+    2.实体：描述客观事物的概念
+        1.表示方法：矩形框
+    3.属性：实体具有的某种特性
+        表示方法：椭圆形
+    4.关系：实体之间的关系
+        1.一对一(1:1)：老公对老婆
+            A中1个实体，B中只能有1个实体与其发生关联
+            B中1个实体，A中只能有1个实体与其发生关联
+        2.一对多(1:n):父亲对孩子
+        3.多对多(m:n):兄弟姐妹对兄弟姐妹
+    5.数据库三范式
+        1.第一范式(1NF):列不可拆分
+        2.第二范式(2NF):唯一标示
+        3.第三范式(3NF):引用主键
+        后１个范式，都是在前１个范式的基础上建立的
+    6.数据库关系实现
+        1:1 实现：主外键关联，添加唯一约束
+        1:n 实现：主外键关联
+        m:n 实现：通过中间表实现
+2.事务和事务回滚
+    １．定义：一件事从开始发生到结束的过程
+    ２．确保数据的一致性
+    ３．应用
+        １．开启事务
+            mysql> begin;
+        ２．终止事务
+            mysql> commit; | rollback;
+        ３．案例
+            １．背景
+        ４．注意
+            事务只针对于表记录的操作(增删改)有效，对于库和表的操作无效
+3.与python交互
+    １．python3:pymysql(模块名)
+
+        python2:MySQLdb(模块名)
+    ２．安装
+        １．在线：sudo pip3 install pymysql
+
+                sudo pip   install mysql-python 
+    window命令下安装:python -m pip install PyQt5
+            或
+            pip install PyQt5
+        ２．离线：pymysql-0.9.1.tar.gz
+                $ tar -zxvf pymysql-0.9.1.tar.gz
+                $ cd pymysql0.9.1
+                $sudo python3 setup.py install
+        ３．环境准备
+            １．创建库 db5,utf8
+                create database db5;
+            ２．创建表　t1
+                use db5;
+                create table t1(
+                    id int primary key auto_increment,
+                    name varchar(20),
+                    score float(5,2)
+                );
+            ３．在表中插入三条记录
+                insert into t1(name,score) values('李白',60),
+                ('杜甫',70),('白居易',90);
+                    
+        4.pymysql使用流程
+            １．数据库连接对象：db=pymysql.connect(...)
+            ２．游标对象：　 cur = db.cursor
+            ３．执行命令：   cur.execute('sql命令')
+            ４．提交:       db.commit()
+            ５．关闭游标:    cur.close()
+            ６．断开连接：   db.close()
+        5.pymysql.connect()参数
+            １．host : 主机地址     host='localhost'
+            ２．user : 用户名       user='root'
+            ３．password: 密码      password='123456'
+            ４．database: 库名      database='db5'
+            ５．charset : 字符集(推荐utf8)  charset='utf8'
+            ６．port:      端口号(3306)     port=3306
+        6.数据库连接对象(db)的方法
+            1.db.cursor()       :创建游标对象
+            2.db.commit()       :提交到数据执行
+            3.db.rollback()     :回滚
+            4.db.close()        :断开与数据库连接
+        7.游标对象(cur)的方法
+            1.cur.execute(sql命令)  :执行sql命令
+            2.cur.close()           :关闭游标对象
+            3.cur.fetchone()        :取１条(查询语句) 元组
+            4.cur.fetchmany(n))       :取n条        大元组中有小元组
+            5.cur.fetchall()        :取所有         大元组，有小元组
+4.MySQL调优
+    １．选择合适的存储引擎
+        １．读操作多：MyISAM
+        ２．写操作多:InnoDB
+    ２．创建索引
+        在 select where order by 常涉及到的字段建立索引
+    ３．SQL语句优化(避免全表扫描)
+        １．where 子句中，不使用 !=,否则就放弃索引全表扫描
+        ２．尽量避免NULL值判断，否则也是放弃索引全表扫描
+        ３．尽量避免 or 连接条件，否则．．．
+        ４．模糊查询尽量避免使用前置%,否则．．．
+        ５．尽量避免使用　in 和　nor in 
+        ６．尽量避免使用　select * ...,不要返回用不到的任何字段
+５．WorkBench 图形化界面管理工具
+    Navicat

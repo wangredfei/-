@@ -1,0 +1,176 @@
+１．索引
+    １．主键(primary key) && 自增长属性(auto_increment)
+            1.主键的使用规则
+                １．一个表中只能有１个主键字段
+                ２．约束：字段值不允许重复，且不能为null
+                ３．KEY标志：PRI
+                ４．通常设置记录编号的字段id,能够唯一锁定１条记录
+        ２．创建表时添加主键
+            create table 表名(
+                id int primary key auto_increment,
+                .....
+                )auto_increment=10000;
+        ３．已有表
+            alter table 表名 add primary key(id);
+        ４．删除
+            １．删除自增长属性(modify)
+                alter table 表名 modify id int;
+            ２．删除主键
+                alter table 表名 drop primary key;
+    ２．外键(foreign key)
+        1.定义：让当前表字段的值在另一个表的范围内选择
+        2.语法
+            foreign key(参考字段名) references 主表(被参考字段名)
+            on delete 级联动作
+            on update 级联动作
+        ３．使用规则
+            １．主表　从表字段数据类型要一致
+            ２．主表被参考字段：主键
+        ４．示例
+        　表１　缴费信息表(财务)
+        　　　id  姓名　    班级　  缴费金额
+            　1   唐碧海    AID09   300
+              2   点秋香    AID09   300 
+          表２  学生信息表(班主任)
+            stu_id      姓名    缴费金额
+              1         唐碧海  300
+              2         点秋香  300
+              3         祝枝山  
+        5.删除外键
+            alter tabel 表名　drop foreign key 外键名;
+            外键名：show create table 表名; 
+        6.级联动作
+            １．cascade
+                数据级联删除　更新(参考字段)
+            ２．restrict(默认)
+                从表有相关联记录，不允许主表操作
+            ３．set null
+                主表删除　更新，从表相关联记录字段值设置为null
+    3.锁
+        １．目的：解决客户端并发访问的冲突问题
+        ２．锁分类
+            １．锁类型
+                １．读锁(共享锁)
+                    select:加读锁之后别人不能更改表记录，但可以进行查询
+                ２．写锁(互斥锁，排他锁)
+                    加写锁后别人不能查　也不能改　
+            ２．锁粒度
+                １．表级锁：加读锁　写锁
+                ２．行级锁：加读锁　写锁
+    ４．存储引擎（处理表的处理器）
+        １．基本操作
+            １．查看所有的存储引擎
+                show engines;
+            2.查看已有表的存储引擎
+                show create table 表名;
+            3.指定存储引擎
+                create table 表名(...)engine=myisam;
+            4.已有表
+                alter tabel 表名 engine=innodb;
+        2.常用存储引擎的特点
+            1.innodb
+                1.支持外键　事务　事务回滚
+                ２．支持行级锁
+                ３．共享表空间
+                    表名.frm :表结构和索引文件
+                    表名.ibd :表记录
+            ２．myisam
+                1.支持表级锁
+                ２．独享表空间
+                    表名.frm : 表结构
+                    表名.myd : 表记录(my data)
+                    表名.myi　：　索引文件(my index)　
+            ３．memory
+                表结构存储在硬盘中，表记录存储在内存中
+                服务／主机重启后，表结构还在，表记录消失
+        ３．如何决定使用那个存储引擎
+            １．执行查询操作多的表要用　myisam (使用innodb浪费资源)
+            ２．写操作多的表用　innodb
+　　5.数据的备份(mysqldump,在Linux终端操作)
+        １．命令格式
+            mysqldump -u用户名 -p 源库名　> ~/xxx.sql
+        2.源库名表示方式
+            --all-database      备份所有库
+            库名                 备份单个库
+            -B 库1 库2 库3       备份多个库
+            库名　表1 表2 表3     备份指定库的多张表
+　  6.数据恢复(在Linux终端操作)
+    　１．命令格式
+            mysql -uroot -p 目标库名　< xxx.sql
+            mysql -uroot -p db4 < db4.sql
+    　２．从所有库备份中恢复某一个库(--one-database)
+            mysql -uroot -p --one-database 库名　< all.sql
+        3.示例
+        １．在　MOSHOU.sheng　新增１条记录
+            insert into sheng(s_id,s_name) values ('300001','青海省');
+        ２．在　MOSHOU新建１张表
+            create table t520(id int);
+        ３．恢复　MOSHOU库
+            mysql -uroot -p --one-database MOSHOU　< all.sql
+    　４．注意
+        １．恢复库时，如果库不存在则必须先创建空库
+        ２．恢复库时，恢复到原库会将表中数据覆盖，新增表不会删除
+　　7.数据导入
+        １．作用：把文件系统的内容导入到数据库表中
+        ２．语法格式
+            load data infile '/var/lib/mysql-files/文件名'
+            into table 表名
+            fields terminated by '分隔符'
+            lines  terminated by '\n'
+        3.把　scoreTable.csv文件导入到数据库表中
+            1.在数据库中创建对应的表
+                create table scoretab(
+                -> id int,
+                -> name　varchar(20),
+                -> score float(5,2),
+                -> phnum char(11),
+                -> class char(7)
+                -> );
+
+
+            ２．把文件拷贝到数据库的搜索路径中
+                １．查看搜索路径
+                    show variables like 'secure_file_priv';
+                2.拷贝
+                    sudo cp scoreTable.csv /var/lib/mysql-files/
+            ３．执行数据导入语句
+                 load data infile '/var/lib/mysql-files/scoreTable.csv'
+                 into table scoretab fields terminated by ','
+                 lines terminated by '\n';
+　　8.数据导出
+        １．作用：将数据库中表记录导出到系统文件里
+        ２．语法格式
+            select ... from 表名 where 条件
+            into outfile '/var/lib/mysql-files/文件名'
+            files terminated by '分隔符'
+            lines terminated by '\n'; 
+        3.把省表中所有记录导出来，sheng.csv
+            select * from MOSHOU.sheng
+            -> into outfile '/var/lib/mysql-files/sheng.csv'
+            -> fields terminated by ','
+            -> lines terminated by '\n';
+   9.MySQL用户账户管理
+    １．开启 mysql远程连接
+        １．sudo -i
+        2. cd /etc/mysql/mysql.conf.d/
+        3.subl mysqld.cnf
+            #bind-address=127.0.0.1
+        4./etc/init.d/mysql restart
+    ２．添加一个授权用户
+        1.用root用户登录mysql
+        2.授权
+            mysql> grant 权限列表 on 库.表
+                    to '用户名'@'%' identified by '密码'
+                    with great option;
+            权限列表：　all privileges,select update
+            库．表　：　*.*     库名.* 
+        3.示例
+           １． 添加用户 tiger,密码　123，对所有库的所有表有所有权限
+                grant all privileges on *.* to 'tiger'@'%' 
+                identified by '123 
+                with grant option;
+
+            ２．添加用户　rabbit,密码　123 ,对db4库有所有权限
+                grant select on db4.* to 'rabbit'@'%'
+                -> identified by '123'
+                -> with grant option;

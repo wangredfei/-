@@ -1,0 +1,154 @@
+1.SQL查询
+１．总结
+    3.select ...聚合函数　from 表名
+    1.where....
+    2.group by...
+    4.having ...
+    5.order by ...
+    6.limit ....
+2.聚合函数
+    1.分类
+        avg(字段名) ：求平均值
+        sum(字段名)
+        max(字段名)
+        min(字段名)
+        count(字段名) :统计该字段记录的个数
+    ２．攻击力最大值是多少？
+    select max(gongji) from sanguo;
+    ３．统计id,name俩个字段分别有几条记录？
+        select count(id),count(name) from sanguo;
+        ＃空值NULL不会被统计，''会被统计
+    ４．统计蜀国英雄中攻击力大于200的英雄的数量
+    select count(id) from sanguo where country='蜀国' and gongji>200;
+３．group by :给查询的结果进行分组
+    1.示例
+        1.计算每个国家的平均攻击力
+            select country,avg(gongji) from sanguo group by country;
+        ２．查找所有国家的男英雄中，英雄数量最多的前２名，显示国家名称和英雄数量
+            select country,count(id) from sanguo
+            where sex='男'
+            group by country
+            order by count(id) desc
+            limit 2;
+    2.注意
+        １．如果 select 后字段和group by 之后不一致，则必须对该字段进行聚合处理(聚合函数)
+
+４．having : 对分组聚合后的结果进行进一步的筛选
+    １．示例
+        找出平均攻击力大于１０５的国家前俩名，显示国家名称和平均攻击力
+        select country,avg(gongji) from sanguo 
+        group by country
+        having avg(gongji)>105
+        order by avg(gongji) desc
+        limit 2;
+    ２．注意
+        １．having 语句通常与 group by 语句联合使用
+        ２．having 语句的存在弥补了where关键字不能与聚合函数联合使用的不足，
+        　　where只能操作表中实际存在的字段
+５．distinct : 不显示字段的重复值
+    １．表中都有哪些国家
+        select distinct country from sanguo;
+    2.注意
+        １．distinct和from 之间所有字段都相同才会去重
+        ２．distinct 不能对任何字段做聚合处理
+６．查询表记录时可以做数学运算
+    １．运算符：+ - * / %
+    2.示例
+        查询时所有英雄攻击力翻倍
+        select name,gongji*2 as xgj from sanguo;
+２．嵌套查询(子查询)
+    １．定义：把内层的查询结果作为外层的查询条件
+    ２．语法
+        select ... from 表名 where 字段名　运算符(查询);
+    3.示例
+        １．把攻击值小于平均攻击值的英雄名字和攻击值显示出来
+            select name,gongji from sanguo where gongji<
+            (select avg(gongji) from sanguo);
+        ２．找出每个国家攻击力最高的英雄名字和攻击值
+             select name,gongji from sanguo
+            　where gongji in 
+            　(select max(gongji) from sanguo group by country);
+３．多表查询
+    １．俩种方式
+        １．select 字段名1,字段名2 from 表1,表２;(笛卡尔积)
+        ２．多表查询(加 where条件)
+        ... from 表１，表２　where 条件;
+    2.示例
+        １．显示省　市详细信息
+            select sheng.s_name,city.c_name,xian.x_name from
+            MOSHOU.sheng,MOSHOU.city,MOSHOU.xian
+            where 
+            sheng.s_id=city.cfather_id and
+            city.c_id=xian.xfather_id;
+４．连接查询
+    １．内连接
+        １．内连接(多表查询等价，只显示符合条件的记录)
+            １．语法格式
+                select 字段名 from 表１　inner join 表2 on 条件
+                inner join 表3 on 条件;
+            2.示例
+                1.显示省　市详细信息
+                    select sheng.s_name,city.c_name from sheng
+                    inner join city
+                    on sheng.s_id=city.cfather_id;
+                2.显示省　市　县详细信息
+                    select sheng.s_name,city.c_name,xian.x_name from
+                    sheng inner join city on sheng.s_id=city.cfather_id
+                    inner join xian on city.c_id=xian.xfather_id;
+
+    ２．外链接
+        １．左连接(left)
+            1.定义：以左表为主显示查询结果
+            示例：显示省市县详细信息
+            select sheng.s_name,city.c_name,xian.x_name from
+            sheng left join city on sheng.s_id=city.cfather_id
+            left join xian on city.c_id=xian.xfather_id;
+        ２．右连接(right)
+            １．定义：以右表为主显示查询结果
+5.约束
+    1.非空约束(not null)
+    2.默认约束(default 默认值)
+6.索引
+    1.定义
+        对数据库中表的一列或者多列的值进行排序的一种结构
+    ２．优点
+        加快数据的检索速度
+    ３．缺点
+        １．占用物理存储空间
+        ２．当你对表中数据更新时，索引需要动态维护，占用系统资源，
+            降低数据的维护速度
+    4.索引示例　 
+        １．开启运行时间检测
+            set profiling=1;
+        ２．执行一条查询命令(没有创建索引)
+            select name from t1 where name='lucy88888'
+        3.在name字段创建一个索引
+            create index name on t1(name)
+        ４．在执行一条查询命令
+            select name from t1 where name='lucy99999'
+        ５．对比执行时间
+             show profiles;
+        6.关闭
+            set profiling=０;
+7.索引分类
+    １．普通索引(index) && 唯一索引(unique)
+        1.使用规则
+            １．可以设置多个字段
+            ２．index无约束,unique字段值不能重复但可为NULL
+            3.把经常用来查询的字段设置为索引字段
+            ４．index的key标志：MUL　  unique : UNI
+        ２．创建表时创建索引
+            create table 表名(
+                ....
+                index(name),
+                index(id),
+                unique(phnumber),
+                unique(card phnumber)
+            );
+        3.已有表中创建
+            create [unique] index 索引名　on 表名(字段名);
+        4.查看索引
+            １．desc 表名　－－－＞　KEY标志
+            ２．show index from 表名\G;
+        5.删除
+            drop index 索引名　on 表名;
